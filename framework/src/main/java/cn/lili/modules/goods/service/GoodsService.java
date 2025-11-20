@@ -201,6 +201,31 @@ public interface GoodsService extends IService<Goods> {
     void categoryGoodsName(String categoryId);
 
     /**
+     * 获取商品版本号
+     *
+     * @param goodsId 商品ID
+     * @return 版本号
+     */
+    Long getGoodsVersion(String goodsId);
+
+    /**
+     * 更新商品字段
+     *
+     * @param goodsId 商品ID
+     * @param field 字段名
+     * @param value 字段值
+     */
+    void updateGoodsField(String goodsId, String field, Object value);
+
+    /**
+     * 增加商品版本号
+     *
+     * @param goodsId 商品ID
+     * @return 新版本号
+     */
+    Long incrementGoodsVersion(String goodsId);
+
+    /**
      * 添加商品评价数量
      *
      * @param commentNum 评价数量

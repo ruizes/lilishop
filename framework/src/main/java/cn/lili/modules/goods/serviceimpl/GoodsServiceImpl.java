@@ -552,6 +552,29 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
+    public Long getGoodsVersion(String goodsId) {
+        Goods goods = getById(goodsId);
+        return goods != null ? goods.getVersion() : null;
+    }
+
+    @Override
+    public void updateGoodsField(String goodsId, String field, Object value) {
+        LambdaUpdateWrapper<Goods> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Goods::getId, goodsId);
+        updateWrapper.setSql(field + " = #{value}", value);
+        update(updateWrapper);
+    }
+
+    @Override
+    public Long incrementGoodsVersion(String goodsId) {
+        LambdaUpdateWrapper<Goods> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(Goods::getId, goodsId);
+        updateWrapper.setSql("version = version + 1");
+        update(updateWrapper);
+        return getGoodsVersion(goodsId);
+    }
+
+    @Override
     public long countStoreGoodsNum(String storeId) {
         return this.count(
                 new LambdaQueryWrapper<Goods>()

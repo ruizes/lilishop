@@ -45,4 +45,9 @@ public class GoodsEditMessage {
      * 操作类型：update/delete/insert
      */
     private String operation;
+
+    /**
+     * 版本号，用于冲突检测
+     */
+    private Long version;
 }

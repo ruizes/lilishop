@@ -72,13 +72,38 @@ public class PriceAdjustmentServiceImpl extends ServiceImpl<GoodsMapper, Goods> 
      */
     @Override
     public Integer predictInventoryDemand(String goodsId, Integer days) {
-        // 这里可以添加库存需求预测逻辑
-        // 1. 分析历史销售数据
-        // 2. 分析市场趋势
-        // 3. 考虑促销活动
-        // 4. 使用预测算法计算未来库存需求
-
-        // 示例：简单的库存需求预测，基于历史平均销量
-        return 100 * days;
+        // 获取历史销售数据
+        // 这里可以从订单表或销售统计表中获取历史销售数据
+        // 示例：假设我们从订单表中获取过去30天的销售数据
+        int historicalSales = getHistoricalSales(goodsId, 30);
+        
+        // 计算平均每天销量
+        double averageDailySales = historicalSales / 30.0;
+        
+        // 考虑市场趋势和促销活动
+        // 这里可以添加更复杂的预测算法，如线性回归、时间序列分析等
+        double trendFactor = 1.0; // 趋势因子，1.0表示无变化
+        double promotionFactor = 1.0; // 促销因子，1.0表示无促销
+        
+        // 计算预测的库存需求
+        int predictedDemand = (int) (averageDailySales * days * trendFactor * promotionFactor);
+        
+        // 确保预测结果不为负数
+        return Math.max(predictedDemand, 0);
+    }
+    
+    /**
+     * 获取历史销售数据
+     *
+     * @param goodsId 商品ID
+     * @param days    天数
+     * @return 历史销售数据
+     */
+    private int getHistoricalSales(String goodsId, int days) {
+        // 这里需要实现从数据库中获取历史销售数据的逻辑
+        // 示例：假设我们从订单表中获取过去days天的销售数据
+        // 实际实现中，需要根据具体的数据库表结构和业务逻辑来编写SQL查询
+        // 这里为了演示，返回一个随机的历史销售数据
+        return (int) (Math.random() * 1000) + 100;
     }
 }
