@@ -151,6 +151,9 @@ public class Goods extends BaseEntity {
     @ApiModelProperty(value = "商品参数json", hidden = true)
     private String params;
 
+    @ApiModelProperty(value = "版本号", hidden = true)
+    private Long version = 0L;
+
 
     public Goods() {
     }

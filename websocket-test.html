@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket测试</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h1>商品编辑实时协同测试</h1>
+    <div>
+        <h3>连接状态: <span id="status">未连接</span></h3>
+        <button onclick="connect()">连接WebSocket</button>
+        <button onclick="disconnect()">断开连接</button>
+    </div>
+
+    <div>
+        <h3>发送消息</h3>
+        <input type="text" id="goodsId" placeholder="商品ID" value="123">
+        <input type="text" id="field" placeholder="字段名" value="name">
+        <input type="text" id="value" placeholder="新值" value="测试商品">
+        <input type="text" id="editorId" placeholder="编辑人ID" value="user001">
+        <input type="text" id="editorName" placeholder="编辑人名称" value="测试用户">
+        <button onclick="sendMessage()">发送消息</button>
+    </div>
+
+    <div>
+        <h3>接收消息</h3>
+        <textarea id="messages" rows="10" cols="80"></textarea>
+    </div>
+
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('http://localhost:8888/ws/goods');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                document.getElementById('status').innerText = '已连接';
+                document.getElementById('status').style.color = 'green';
+                
+                // 订阅商品编辑消息
+                stompClient.subscribe('/topic/goods/edit', function (messageOutput) {
+                    var message = JSON.parse(messageOutput.body);
+                    showMessage(message);
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            document.getElementById('status').innerText = '未连接';
+            document.getElementById('status').style.color = 'red';
+        }
+
+        function sendMessage() {
+            var message = {
+                goodsId: document.getElementById('goodsId').value,
+                field: document.getElementById('field').value,
+                value: document.getElementById('value').value,
+                editorId: document.getElementById('editorId').value,
+                editorName: document.getElementById('editorName').value,
+                operation: 'update'
+            };
+            
+            stompClient.send("/app/goods/edit", {}, JSON.stringify(message));
+            console.log('消息发送成功:', message);
+        }
+
+        function showMessage(message) {
+            var messages = document.getElementById('messages');
+            var messageStr = JSON.stringify(message, null, 2);
+            messages.value += '[' + new Date().toLocaleString() + '] ' + messageStr + '\n';
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // 页面加载完成后自动连接
+        window.onload = function() {
+            connect();
+        };
+    </script>
+</body>
+</html>
